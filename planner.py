@@ -2,6 +2,7 @@
 import argparse
 parser = argparse.ArgumentParser()
 import numpy as np
+from pulp import *
 
 class Planner():
     def __init__(self,mdp,algorithm,policy):
@@ -25,7 +26,8 @@ class Planner():
                 print_result(V_pi, policy)
         elif algorithm == "lp":
             if policy == None:
-                lp(S, A, T, R, gamma)
+                V_star, pi_star = lp(S, A, T, R, gamma)
+                print_result(V_star, pi_star)
             else:
                 policy = read_policy(policy)
                 V_pi = policy_eval(S, A, T, R, gamma, policy)
@@ -100,9 +102,36 @@ def hpi(S, A, T, R, gamma):
         else:
             pi = pi_improved
 
-
 def lp(S, A, T, R, gamma):
-    pass
+    V = np.zeros(S)
+
+    # Create the LP problem
+    prob = LpProblem("Bellman_Optimality_Equations", LpMinimize)
+
+    lpVariables = []
+    for i in range(S):
+        variable = LpVariable(f"V_{i}")
+        lpVariables.append(variable)
+
+    # Objective
+    prob += lpSum(lpVariables)
+
+    # Constraints
+    for s1 in range(S):
+        for a in range(A):
+            constraint = R[s1, a]
+            for s2 in range(S):
+                constraint += gamma * T[s1, a, s2] * lpVariables[s2]
+
+            prob += lpVariables[s1] >= constraint
+
+    prob.solve(PULP_CBC_CMD(msg=0))
+
+    for s in range(S):
+        V[s] = lpVariables[s].varValue
+
+    pi_star = np.argmax(R + np.sum(gamma * T * V.reshape(1, 1, S), axis=2), axis=1)
+    return V, pi_star
 
 def dual_lp(S, A, T, R, gamma):
     pass
