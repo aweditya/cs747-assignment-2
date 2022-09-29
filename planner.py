@@ -17,7 +17,8 @@ class Planner():
                 print_result(V_pi, policy)
         elif algorithm == "hpi":
             if policy == None:
-                hpi(S, A, T, R, gamma)
+                V_star, pi_star = hpi(S, A, T, R, gamma)
+                print_result(V_star, pi_star)
             else:
                 policy = read_policy(policy)
                 V_pi = policy_eval(S, A, T, R, gamma, policy)
@@ -90,7 +91,15 @@ def vi(S, A, T, R, gamma):
             V_star = V_star_next
 
 def hpi(S, A, T, R, gamma):
-    pass
+    pi = np.random.randint(0, A, size=S)
+    while(True):
+        v_pi = policy_eval(S, A, T, R, gamma, pi)
+        pi_improved = np.argmax(R + gamma * np.sum(T * v_pi.reshape(1, 1, S), axis=2), axis=1)
+        if (pi == pi_improved).all():
+            return v_pi, pi
+        else:
+            pi = pi_improved
+
 
 def lp(S, A, T, R, gamma):
     pass
