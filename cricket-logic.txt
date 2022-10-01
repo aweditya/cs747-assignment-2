@@ -1,0 +1,151 @@
+Notation: P(a, run) denotes the probability of getting 'run' runs given that A takes action 'a'
+
+Suppose there are T runs and O balls. Suppose you are on strike.
+End states: T runs and O=0 balls
+
+Current state (T, O)
+If action is defend:
+	O←O-1
+	If O == 0 and T != 0: // Game over
+		Send A to state (T,0) with reward 0
+		break
+		
+	If successful (with probability P(0, 0)):
+		If O is divisble by 6:
+			Rotate strike
+			p = 1 // Keep track of the probability of this happening
+			while (B defends):
+				p = p*[(1-q)/2]
+				O←O-1
+				If O == 0 and T != 0: // Game over
+					Send A to state (T,0) with reward 0
+					break
+					
+				If O is divisible by 6: // Current over finished
+					Send A to state (T,O)
+					break
+		
+			If B gets out (with probability q):
+				p = p*q
+				O←O-1
+				Send A to state (T,0) with reward 0
+				break
+					
+			Else (B scores 1 run with probability (1-q)/2):
+				p = p*(1-q)/2
+				O←O-1
+				T←T-1
+				if T == 0:
+					Send A to state (0,O) with reward 1
+					break
+				else:
+					Send A to state (T,O) with reward 0
+					break
+				
+		Else (O is not divisible by 6):
+			Send A to state (T, O) with reward 0
+			break
+					
+	Else (with probability P(0, -1)):
+		Send A to state (T, 0) with reward 0
+		break
+		
+Else if action is 1 run:
+	O←O-1
+	If O == 0 and T != 0: // Game over
+		Send A to state (T,0) with reward 0
+		break
+		
+	If (A gets 1 run): // with probability P(1, 1)
+		T←T-1
+		If T == 0: 
+			Send A to state (0, O) with reward 1
+			break
+			
+		If (O is divisble by 6): // A retains strike
+			Send A to state (T, O) with reward 0
+			break
+			
+		Else: // B gets the strike
+			Rotate strike
+			p = 1 // Keep track of the probability of this happening
+			while (B defends):
+				p = p*[(1-q)/2]
+				O←O-1
+				If O == 0 and T != 0: // Game over
+					Send A to state (T,0) with reward 0
+					break
+					
+				If O is divisible by 6: // Current over finished
+					Send A to state (T,O) with reward 0
+					break
+		
+			If B gets out (with probability q):
+				p = p*q
+				O←O-1
+				Send A to state (T,0) with reward 0
+				break
+					
+			Else (B scores 1 run with probability (1-q)/2):
+				p = p*(1-q)/2
+				O←O-1
+				T←T-1
+				if T == 0:
+					Send A to state (0,O) with reward 1
+					break
+				else:
+					Send A to state (T,O) with reward 0
+					break
+					
+			
+	Else If (A gets 0 runs): // with probability P(1, 0)
+		If (O is divisible by 6): // B gets strike
+			Rotate strike
+			p = 1 // Keep track of the probability of this happening
+			while (B defends):
+				p = p*[(1-q)/2]
+				O←O-1
+				If O == 0 and T != 0: // Game over
+					Send A to state (T,0) with reward 0
+					break
+					
+				If O is divisible by 6: // Current over finished
+					Send A to state (T,O) with reward 0
+					break
+		
+			If B gets out (with probability q):
+				p = p*q
+				O←O-1
+				Send A to state (T,0) with reward 0
+				break
+					
+			Else (B scores 1 run with probability (1-q)/2):
+				p = p*[(1-q)/2]
+				O←O-1
+				T←T-1
+				if T == 0:
+					Send A to state (0,O) with reward 1
+					break
+				else:
+					Send A to state (T,O) with reward 0
+					break
+		
+		Else:
+			Send A to state (T, O) with reward 0
+			break
+		
+	Else (A gets out): // with probability P(1, -1)
+		Send A to state (T, 0) with reward 0
+		break
+
+Else if (action is 2 runs):
+	O←O-1
+	If O == 0 and T != 0: // Game over
+		Send A to state (T,0) with reward 0
+		break
+		
+	If (A gets 2 runs):
+
+Else if (action is 3 runs):
+Else if (action is 4 runs):
+Else (action is 6 runs):
