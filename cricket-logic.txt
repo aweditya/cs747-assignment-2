@@ -127,3 +127,32 @@ Else:
 		Call B's behaviour
 	Else:
 		Send A to (T, O) with reward 0
+				
+-----------------------------------------------------------------------
+Combining all the above cases into one:
+Suppose A gets k runs
+O = O - 1
+If (k == -1): // Game over
+	Send A to state (T, 0) with reward 0
+Else:
+	T = T - k
+	If (k is odd):
+		If (T == 0):
+			Send A to (0, O) with reward 1
+		Else:
+			If (O divisible by 6):
+				Send A to (T, O) with reward 0
+			Else:
+				Rotate strike
+				Call B's behaviour
+	Else (k is even):
+		If (T == 0):
+			Send A to (0, O) with reward 1
+		Else:
+			If (O divisible by 6):
+				Rotate strike
+				Call B's behaviour
+			Else:
+				Send A to (T, O) with reward 0
+				
+
