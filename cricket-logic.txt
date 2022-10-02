@@ -8,39 +8,7 @@ What happens when A gets 4 runs?
 What happens when A gets 5 runs?
 What happens when A gets 6 runs?
 
-Finally, we have B's behaviour.
-It depends on how many balls are left in the over when B gets the strike.
-Number of balls left (k) = O mod 6 (let us worry about the 0 case later)
-
-p = 1
-for i in 1..k:
-	// i is the number of balls B defends
-	O = O - 1
-	if O == 0 and T != 0:
-		Send A to (T, 0) with reward 0
-		break
-	
-	If (B gets out): // with probability q
-		// transition probability = p*q
-		Send A to (T, 0) with reward 0
-	
-	Else If (B defends): // with probability (1-q)/2
-		// transition probability = p*(1-q)/2
-		p = p*(1-q)/2
-		Send A to (T, O) with reward 0
-		
-	Else (B gets 1 run): 
-		// transition probability = p*(1-q)/2
-		T = T - 1	
-		If T == 0:
-			Send A to (0, O) with reward 1
-		Else:
-			Send A to (T, O) with reward 0
-		
-
-
 Remember: We can reduce the number of transitions (If you cannot make T runs in O balls, there is no need to do a case by case analysis for those)
-
 
 Let the current state be (T,O) {T runs left, O balls left}
 1) A gets out (Game ends):
@@ -155,4 +123,35 @@ Else:
 			Else:
 				Send A to (T, O) with reward 0
 				
+-----------------------------------------------------------------------		
+B's behaviour:
 
+p = 1 // To keep track of the probability of each event
+While (True):
+	O = O - 1
+	if O == 0 and T != 0:
+		Send A to (T, 0) with reward 0
+		break
+	
+	If (B gets out): // with probability q
+		Send A to (T, 0) with reward 0
+	
+	Else If (B defends):
+		p = p*(1-q)/2 
+		If (O divisible by 6):
+			Send A to (T, O) with reward 0
+			break
+		Else:
+			continue
+			
+	Else (B gets 1 run):
+		T = T - 1
+		If (T == 0):
+			Send A to (0, O) with reward 1
+			break
+		
+		If (O divisible by 6):
+			continue
+		Else:
+			Send A to (T, O) with reward 0
+			break
