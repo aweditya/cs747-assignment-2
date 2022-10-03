@@ -1,2 +1,2 @@
 # Assignment 2
-This repository contains my solution to Programming Assignment - 2 in the course, CS 747: Foundations of Intelligent and Learning Agents, taken by Prof. Shivaram Kalyanakrishnan. 
+This repository contains my solution to Programming Assignment - 2 in the course, CS 747: Foundations of Intelligent and Learning Agents, taken by Prof. Shivaram Kalyanakrishnan. In this assigment, we solve the MDP Planning Problem using _Value Iteration_, _Howard's Policy Iteration_, _Linear Programming_. The solver designed is used to come up with a policy for cricket with one wicket left.
