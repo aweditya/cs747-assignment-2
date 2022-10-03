@@ -34,7 +34,8 @@ class Planner():
                 print_result(V_pi, policy)
         elif algorithm == "dual_lp":
             if policy == None:
-                dual_lp(S, A, T, R, gamma)
+                V_star, pi_star = dual_lp(S, A, T, R, gamma)
+                print_result(V_star, pi_star)
             else:
                 policy = read_policy(policy)
                 V_pi = policy_eval(S, A, T, R, gamma, policy)
@@ -70,7 +71,7 @@ def read_mdp(path):
         for ed in end_states:
             R[ed, :] = 0
             T[ed, :, ed] = 1
-            
+    
     return S, A, T, R, gamma
 
 def read_policy(path):
@@ -103,10 +104,10 @@ def hpi(S, A, T, R, gamma):
             pi = pi_improved
 
 def lp(S, A, T, R, gamma):
-    V = np.zeros(S)
+    V_star = np.zeros(S)
 
     # Create the LP problem
-    prob = LpProblem("Bellman_Optimality_Equations", LpMinimize)
+    prob = LpProblem("Primal", LpMinimize)
 
     lpVariables = []
     for i in range(S):
@@ -128,13 +129,46 @@ def lp(S, A, T, R, gamma):
     prob.solve(PULP_CBC_CMD(msg=0))
 
     for s in range(S):
-        V[s] = lpVariables[s].varValue
+        V_star[s] = lpVariables[s].varValue
 
-    pi_star = np.argmax(R + np.sum(gamma * T * V.reshape(1, 1, S), axis=2), axis=1)
-    return V, pi_star
+    pi_star = np.argmax(R + np.sum(gamma * T * V_star.reshape(1, 1, S), axis=2), axis=1)
+    return V_star, pi_star
 
 def dual_lp(S, A, T, R, gamma):
-    pass
+    pi_star = np.zeros(S)
+    prob = LpProblem("Dual", LpMaximize)
+
+    lpVariables = []
+    for i in range(S):
+        x_i = []
+        for k in range(A):
+            variable = LpVariable(f"x_{i}^{k}")
+            x_i.append(variable)
+
+        lpVariables.append(x_i)
+
+    # Objective
+    prob += sum(map(sum, lpVariables * R))
+    #print(prob)
+
+    # Constraints
+    for j in range(S):
+        rhs = 1
+        lhs = 0
+        for k in range(A):
+            for i in range(S):
+                rhs += gamma * T[i, k, j] * lpVariables[i][k]
+
+            lhs += lpVariables[j][k] 
+
+        prob += lhs == rhs
+
+    prob.solve(PULP_CBC_CMD(msg=0))
+
+    variableValues = np.array([[lpVariables[i][k].varValue for k in range(A)] for i in range(S)])
+    pi_star = np.argmax(variableValues, axis=1)
+
+    return policy_eval(S, A, T, R, gamma, pi_star), pi_star
 
 def policy_eval(S, A, T, R, gamma, policy):
     V_pi = np.linalg.pinv(np.eye(S) - gamma * T[np.arange(S), policy, :]) @ R[np.arange(S), policy]
