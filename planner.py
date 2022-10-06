@@ -53,7 +53,7 @@ def read_mdp(path):
                 R = np.zeros((S, A))
                 T = np.zeros((S, A, S))
             elif split_line[0] == "end":
-                end_states = map(int, split_line[1])
+                end_states = list(map(int, split_line[1:]))
             elif split_line[0] == "transition":
                 s1 = int(split_line[1])
                 a = int(split_line[2])
@@ -66,11 +66,6 @@ def read_mdp(path):
                 mdptype = split_line[1]
             elif split_line[0] == "discount":
                 gamma = float(split_line[1])
-
-    if mdptype == "episodic":
-        for ed in end_states:
-            R[ed, :] = 0
-            T[ed, :, ed] = 1
     
     return S, A, T, R, gamma
 
