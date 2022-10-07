@@ -12,7 +12,7 @@ class VerifyOutputPlanner:
     def __init__(self,algorithm,print_error):
         algorithm_ls = list()
         if algorithm=='all':
-            algorithm_ls+=['hpi','vi','lp', 'dual_lp', 'default']
+            algorithm_ls+=['hpi','vi','lp', 'default']
         else:
             algorithm_ls.append(algorithm)
             
