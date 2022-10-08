@@ -181,7 +181,7 @@ if __name__ == "__main__":
     planner_path = 'planner'
     states_path = 'states'
 
-    get_encoded_policy(out=rand_pol_path)
+    get_encoded_policy(rand_pol_path=rand_pol_path)
 
     cmd_cricket_states =  "python", "cricket_states.py", "--balls", "15", "--runs", "30"
     f = open(states_path,'w')
