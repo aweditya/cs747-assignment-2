@@ -35,6 +35,41 @@ class Planner():
                 T, R = get_matrix(S, A, TR)
                 V_pi = policy_eval(S, A, T, R, gamma, policy)
                 print_result(V_pi, policy)
+
+    # S, A, T, R, gamma = read_mdp(mdp)
+
+    # if algorithm == "vi":
+    #     if policy == None:
+    #         V_star, pi_star = vi(S, A, T, R, gamma)
+    #         print_result(V_star, pi_star)
+    #     else:
+    #         policy = read_policy(policy)
+    #         V_pi = policy_eval(S, A, T, R, gamma, policy)
+    #         print_result(V_pi, policy)
+    # elif algorithm == "hpi":
+    #     if policy == None:
+    #         V_star, pi_star = hpi(S, A, T, R, gamma)
+    #         print_result(V_star, pi_star)
+    #     else:
+    #         policy = read_policy(policy)
+    #         V_pi = policy_eval(S, A, T, R, gamma, policy)
+    #         print_result(V_pi, policy)
+    # elif algorithm == "lp":
+    #     if policy == None:
+    #         V_star, pi_star = lp(S, A, T, R, gamma)
+    #         print_result(V_star, pi_star)
+    #     else:
+    #         policy = read_policy(policy)
+    #         V_pi = policy_eval(S, A, T, R, gamma, policy)
+    #         print_result(V_pi, policy)
+    # elif algorithm == "dual_lp":
+    #     if policy == None:
+    #         V_star, pi_star = dual_lp(S, A, T, R, gamma)
+    #         print_result(V_star, pi_star)
+    #     else:
+    #         policy = read_policy(policy)
+    #         V_pi = policy_eval(S, A, T, R, gamma, policy)
+    #         print_result(V_pi, policy)
         
 def read_mdp(path):
     with open(path, 'r') as f:
@@ -69,6 +104,33 @@ def read_mdp(path):
                 gamma = float(split_line[1])
 
     return S, A, TR, gamma
+
+    # with open(path, 'r') as f:
+    #     lines = f.readlines()
+    #     for line in lines:
+    #         split_line = line.strip().split()
+    #         if split_line[0] == "numStates":
+    #             S = int(split_line[1])
+    #         elif split_line[0] == "numActions":
+    #             A = int(split_line[1])
+    #             R = np.zeros((S, A))
+    #             T = np.zeros((S, A, S))
+    #         elif split_line[0] == "end":
+    #             end_states = list(map(int, split_line[1:]))
+    #         elif split_line[0] == "transition":
+    #             s1 = int(split_line[1])
+    #             a = int(split_line[2])
+    #             s2 = int(split_line[3])
+    #             r = float(split_line[4])
+    #             p = float(split_line[5])
+    #             R[s1, a] += p*r
+    #             T[s1, a, s2] += p
+    #         elif split_line[0] == "mdptype":
+    #             mdptype = split_line[1]
+    #         elif split_line[0] == "discount":
+    #             gamma = float(split_line[1])
+    
+    # return S, A, T, R, gamma
 
 def read_policy(path):
     policy = []
@@ -124,6 +186,15 @@ def vi(S, A, TR, gamma):
         else:
             V_old = V.copy()
 
+    # V_star = np.zeros(S)
+    # while(True):
+    #     V_star_next = np.max(R + np.sum(gamma * T * V_star.reshape(1, 1, S), axis=2), axis=1)
+    #     if np.allclose(V_star, V_star_next, rtol=1e-11, atol=1e-8):
+    #         pi_star = np.argmax(R + np.sum(gamma * T * V_star.reshape(1, 1, S), axis=2), axis=1)
+    #         return V_star_next, pi_star
+    #     else:
+    #         V_star = V_star_next
+
 def hpi(S, A, TR, gamma):
     pi = np.random.randint(0, A, size=S)
     T, R = get_matrix(S, A, TR)
@@ -134,6 +205,15 @@ def hpi(S, A, TR, gamma):
             return v_pi, pi
         else:
             pi = pi_improved
+
+    # pi = np.random.randint(0, A, size=S)
+    # while(True):
+    #     v_pi = policy_eval(S, A, T, R, gamma, pi)
+    #     pi_improved = np.argmax(R + gamma * np.sum(T * v_pi.reshape(1, 1, S), axis=2), axis=1)
+    #     if (pi == pi_improved).all():
+    #         return v_pi, pi
+    #     else:
+    #         pi = pi_improved
 
 def lp(S, A, TR, gamma):
     V_star = np.zeros(S)
@@ -162,6 +242,14 @@ def lp(S, A, TR, gamma):
         
         else:
             prob += lpVariables[s1] == 0
+
+    # for s1 in range(S):
+    #     for a in range(A):
+    #         constraint = R[s1, a]
+    #         for s2 in range(S):
+    #             constraint += gamma * T[s1, a, s2] * lpVariables[s2]
+
+    #         prob += lpVariables[s1] >= constraint
 
     prob.solve(PULP_CBC_CMD(msg=0))
 
