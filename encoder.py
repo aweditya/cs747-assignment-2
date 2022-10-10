@@ -25,7 +25,6 @@ def read_states(path):
             O = max(o, O)
             T = max(t, T)
 
-    print(O, T)
     return O, T
 
 def action_map(ac):
